@@ -17,6 +17,10 @@ function startGame() {
   document.getElementById("score").textContent = "0";
   document.getElementById("time").textContent = GAME_TIME;
 
+  // Get difficulty
+  const difficulty = document.getElementById("difficulty")?.value || "normal";
+  window.currentDifficulty = difficulty; // Store globally for createDrop
+
   // Start countdown timer
   let timeLeft = GAME_TIME;
   timerInterval = setInterval(() => {
@@ -93,8 +97,12 @@ function createDrop() {
   const xPosition = Math.random() * (gameWidth - 60);
   drop.style.left = xPosition + "px";
 
-  // Make drops fall for 4 seconds
-  drop.style.animationDuration = "4s";
+  // Make drops fall for 4s (normal) or 2s (hard)
+  let duration = "4s";
+  if (window.currentDifficulty === "hard") {
+    duration = "2s";
+  }
+  drop.style.animationDuration = duration;
 
   // Add the new drop to the game screen
   document.getElementById("game-container").appendChild(drop);
@@ -108,6 +116,7 @@ function createDrop() {
   drop.addEventListener("click", () => {
     const scoreElem = document.getElementById("score");
     let score = parseInt(scoreElem.textContent, 10) || 0;
+    // Ensure correct scoring for both difficulties
     if (isBadDrop) {
       score = Math.max(0, score - 1);
     } else {
